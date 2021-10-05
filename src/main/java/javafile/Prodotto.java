@@ -14,7 +14,7 @@ public class Prodotto implements Serializable {
     private Double prezzo;
     private int codice;
     private String img;
-
+    private int qta;
    
     public String getNome(){
         return nome;
@@ -24,6 +24,12 @@ public class Prodotto implements Serializable {
     }
     public Double getPrezzo(){
         return prezzo;
+    }
+     public int getQta(){
+        return qta;
+    }
+    public void setQta(int qta){
+        this.qta = qta;
     }
     public void setPrezzo(Double prezzo){
         this.prezzo = prezzo;

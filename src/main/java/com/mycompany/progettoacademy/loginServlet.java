@@ -28,6 +28,12 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "loginServlet", urlPatterns = {"/login"})
 public class loginServlet extends HttpServlet {
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+               RequestDispatcher rd = request.getRequestDispatcher("/jsp/loginForm.jsp");
+                    rd.forward(request, response);
+    }
+    
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
        // response.sendRedirect("/progettoAcademy/prodotti");
@@ -46,7 +52,7 @@ public class loginServlet extends HttpServlet {
                 currentSession.setAttribute("usr", usr);
               response.sendRedirect("/progettoAcademy/prodotti");
             }else{
-                response.sendRedirect("/progettoAcademy/jsp/loginForm.jsp");
+                response.sendRedirect("/progettoAcademy/login");
             }
           } catch (SQLException ex) {
             Logger.getLogger(loginServlet.class.getName()).log(Level.SEVERE, null, ex);

@@ -69,7 +69,12 @@ int idCarrello=-1;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {       
                     try {
-                        processRequest(request, response);
+                           String user = null;
+                           if(request.getSession().getAttribute("usr")== null){
+                                response.sendRedirect("/progettoAcademy/login");
+                           }else{
+                            processRequest(request, response);
+                           }
                 } catch (SQLException ex) {
                     Logger.getLogger(prodottiServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -89,21 +94,25 @@ int idCarrello=-1;
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
                 String codice = request.getParameter("codice");
+                String qta = request.getParameter("qta");
                 String elimina = request.getParameter("elimina");
+                String qtaElimina = request.getParameter("qtaElimina");
                 String user = request.getSession().getAttribute("usr").toString();
                 try { 
+                ArrayList<Prodotto> carrello = getCart(user);
                     idCarrello = getId(user);
-                if(codice!=null && codice!="-1"){
-                    int ris = parseInt(codice);     
-                      
-                    add(ris,idCarrello);
+                    if(request.getParameter("button1")!=null){
+                        int ris = parseInt(codice);     
+                        int risQta = parseInt(qta);
+                        add(ris,idCarrello,risQta);
                 }
                 if(elimina!=null){
                     int ris = parseInt(elimina);
-                        remove(ris,idCarrello);
+                    int risQta = parseInt(qtaElimina);
+                        remove(ris,idCarrello,risQta);
                 }
                 if(request.getParameter("button2")!=null){
-                    removeAll();
+                    compra(idCarrello,carrello);
                 }
                 } catch (SQLException ex) {
                         Logger.getLogger(prodottiServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -136,6 +145,7 @@ int idCarrello=-1;
                         p.setNome(rs.getString("Nome"));
                         p.setPrezzo(rs.getDouble("Prezzo"));
                         p.setImg(rs.getString("Img"));
+                        p.setQta(rs.getInt("qta"));
                         listaProdotti.add(p);
                     }
                     c.close();
@@ -154,43 +164,100 @@ int idCarrello=-1;
                         p.setNome(rs.getString("Nome"));
                         p.setPrezzo(rs.getDouble("Prezzo"));
                         p.setImg(rs.getString("Img"));
+                        p.setQta(rs.getInt("qta"));
                         listaProdotti.add(p);
                     }
                     c.close();
                     return listaProdotti;
     }
     
-    public void add(int idProdotto, int idCarrello) throws SQLException{
-        System.out.println(idProdotto+idCarrello);
+    public void add(int idProdotto, int idCarrello, int qta) throws SQLException{
           Connection c = driverDB.getConn();
-            String query = "INSERT into carrprod (`idCarrello`, `idProdotto`) VALUES (?, ?)";
-            PreparedStatement stmt = c.prepareStatement(query);
-            stmt.setInt(1, idCarrello);
-            stmt.setInt(2, idProdotto);
+          String select = "SELECT * from carrprod WHERE idCarrello = ?";
+          PreparedStatement ssel = c.prepareStatement(select);
+          ssel.setInt(1,idCarrello);
+          ResultSet rs = ssel.executeQuery();
+          String update = "INSERT into carrprod (`qta`, `idCarrello`, `idProdotto` ) VALUES (?, ?, ?)";
+          while(rs.next()){
+              if(rs.getInt("idProdotto")==idProdotto){
+                  qta = rs.getInt("qta")+qta;
+                  update = "UPDATE carrprod SET qta = ? WHERE carrprod.idCarrello = ? AND carrprod.idProdotto = ?";
+              }
+          }
+            PreparedStatement stmt = c.prepareStatement(update);
+            stmt = c.prepareStatement(update);
+            stmt.setInt(1, qta);
+            stmt.setInt(2, idCarrello);
+            stmt.setInt(3, idProdotto);
             stmt.executeUpdate(); 
             c.close();
             stmt.close();
     }
         
-    public void remove(int idProdotto, int idCarrello) throws SQLException{
+    public void remove(int idProdotto, int idCarrello, int qta) throws SQLException{
         System.out.println(idProdotto+idCarrello);
           Connection c = driverDB.getConn();
-            String query = "DELETE FROM carrprod  WHERE carrprod.idCarrello = ? AND carrprod.idProdotto = ? LIMIT 1 ";
-            PreparedStatement stmt = c.prepareStatement(query);
+            String query2 = "SELECT qta FROM carrprod WHERE carrprod.idCarrello = ? AND carrprod.idProdotto = ? ";
+            PreparedStatement stmt2 = c.prepareStatement(query2);
+            stmt2.setInt(1, idCarrello);
+            stmt2.setInt(2, idProdotto);
+            ResultSet rs = stmt2.executeQuery();
+            int qtaCarrello = -1;
+                    while(rs.next()) qtaCarrello = rs.getInt("qta");
+            String update = "";
+            if(qta==qtaCarrello) {
+                update = "DELETE FROM carrprod  WHERE carrprod.idCarrello = ? AND carrprod.idProdotto = ? ";
+            PreparedStatement stmt = c.prepareStatement(update);
+            int newQta = qtaCarrello - qta;
             stmt.setInt(1, idCarrello);
             stmt.setInt(2, idProdotto);
             stmt.executeUpdate(); 
+            }
+            else {
+                update = "UPDATE carrprod SET qta = ? WHERE carrprod.idCarrello = ? AND carrprod.idProdotto = ?";
+                   PreparedStatement stmt = c.prepareStatement(update);
+            int newQta = qtaCarrello - qta;
+            
+            stmt.setInt(1, newQta);
+            stmt.setInt(2, idCarrello);
+            stmt.setInt(3, idProdotto);
+            stmt.executeUpdate(); 
+            }
+     
             c.close();
-            stmt.close();
     }
     
-      public void removeAll() throws SQLException{
+      public void compra(int idCarrello, ArrayList<Prodotto> list) throws SQLException{
           Connection c = driverDB.getConn();
-            String query = "DELETE FROM carrprod";
+            String query = "DELETE FROM carrprod WHERE idCarrello = ?";
             PreparedStatement stmt = c.prepareStatement(query);
+            stmt.setInt(1, idCarrello);
             stmt.executeUpdate(); 
+            for(Prodotto p : list){
+                int oldQta = -1;
+                String query2 = "SELECT * FROM prodotto WHERE Codice = ?";
+                PreparedStatement stmt2 = c.prepareStatement(query2);
+                stmt2.setInt(1, p.getCodice());
+                ResultSet rs = stmt2.executeQuery(); 
+                int id = -1;
+                while(rs.next()) {
+                    oldQta=rs.getInt("qta");
+                    id = rs.getInt("Codice");
+                }
+                if(oldQta!=-1 && oldQta>=p.getQta()){
+                    String query3 = "UPDATE prodotto SET qta = ? WHERE Codice = ?";
+                    PreparedStatement stmt3 = c.prepareStatement(query3);
+                    int newQta = oldQta-p.getQta();
+                    stmt3.setInt(1,newQta);
+                    stmt3.setInt(2, id);
+                    stmt3.executeUpdate(); 
+                    stmt3.close();
+                }
+                  stmt2.close();
+            }
             c.close();
             stmt.close();
+          
     }
 
     private int getId(String user) throws SQLException {

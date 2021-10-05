@@ -20,10 +20,12 @@
         <title> Shoppy AGM </title>
     </head>
     <body class="mx-5 my-2">
-        <h1>Benvenuti nel mio shop</h1>
-       
+         <center> 
+       <h1 style="margin-top: 0.5rem"> Shoppy AGM </h1>
+       <h4 style="margin-top: 2rem"> Il mondo dello shopping </h4>
+         </center> 
    <style>
-        .grid-container {
+.grid-container {
           display: grid;
           grid-template-columns: 1fr 1fr;
         }
@@ -51,9 +53,7 @@
         .mTop{
             margin-top : 150px;
         }
-        .invisible{
-            visibility: invisible;
-       }
+        
        .mNeg{
            margin-top: -100px;
        }
@@ -61,13 +61,140 @@
            margin-left: 100rem; 
             margin-right: 0;
        }
-        
+       
+.circle{
+  position: absolute;
+  border-radius: 70%;
+  background: #3399ff;
+  animation: ripple 15s infinite;
+  box-shadow: 0px 0px 1px 0px #508fb9;
+}
+
+.small{
+  width: 200px;
+  height: 200px;
+  left: -100px;
+  bottom: -100px;
+}
+
+.medium{
+  width: 400px;
+  height: 400px;
+  left: -200px;
+  bottom: -200px;
+}
+
+.large{
+  width: 600px;
+  height: 600px;
+  left: -300px;
+  bottom: -300px;
+}
+
+.xlarge{
+  width: 800px;
+  height: 800px;
+  left: -400px;
+  bottom: -400px;
+}
+
+.xxlarge{
+  width: 1000px;
+  height: 1000px;
+  left: -500px;
+  bottom: -500px;
+}
+
+.smallr{
+  width: 200px;
+  height: 200px;
+  right: -100px;
+  bottom: -100px;
+}
+
+.mediumr{
+  width: 400px;
+  height: 400px;
+  right: -200px;
+  bottom: -200px;
+}
+
+.larger{
+  width: 600px;
+  height: 600px;
+  right: -300px;
+  bottom: -300px;
+}
+
+.xlarger{
+  width: 800px;
+  height: 800px;
+  right: -400px;
+  bottom: -400px;
+}
+
+.xxlarger{
+  width: 1000px;
+  height: 1000px;
+  right: -500px;
+  bottom: -500px;
+}
+
+
+.shade1{
+  opacity: 0.2;
+}
+.shade2{
+  opacity: 0.5;
+}
+
+.shade3{
+  opacity: 0.7;
+}
+
+.shade4{
+  opacity: 0.8;
+}
+
+.shade5{
+  opacity: 0.9;
+}
+
+@keyframes ripple{
+  0%{
+    transform: scale(0.8);
+  }
+  
+  50%{
+    transform: scale(1.2);
+  }
+  
+  100%{
+    transform: scale(0.8);
+  }
+}
+       
     </style>
-    <%
-    String user = null;
-    if(session.getAttribute("usr")==null) response.sendRedirect("/progettoAcademy/jsp/loginForm.jsp");
-    %>
+    
+ 
+    
+         <div class="ripple-background">
+  <div class="circle xxlarge shade1"></div>
+  <div class="circle xlarge shade2"></div>
+  <div class="circle large shade3"></div>
+  <div class="circle mediun shade4"></div>
+  <div class="circle small shade5"></div>
+</div>
+       <div class="ripple-background">
+  <div class="circle xxlarger shade1"></div>
+  <div class="circle xlarger shade2"></div>
+  <div class="circle larger shade3"></div>
+  <div class="circle mediunr shade4"></div>
+  <div class="circle smallr shade5"></div>
+</div>
+   
     <a href="${pageContext.request.contextPath}/logout" class="btn btn-primary toRight"> LOGOUT </a>
+    <p class="toRight">Ciao <% out.println(session.getAttribute("usr"));%> </p>
     <div class="grid-container">
         <div>
               <h1>Prodotti</h1>
@@ -84,9 +211,16 @@
                 <div class="card-body">
                   <h5 class="card-title"> <% out.println(p.getNome()) ;%> </h5>
                   <p class="card-text"><% out.println(p.getPrezzo()) ;%> €</p>
+                  <p class="card-text"><% out.println("Qta: "+ p.getQta()) ;%></p>
+                  <%
+                      String c = "visible";
+                      if(p.getQta()==0) c = "invisible";
+                  %>
                 <form action="<%= request.getContextPath()%>/prodotti" method="post">
+                    <center> <label class="in<%out.println(c);%>" style="color : red;">Esaurito :c </label></center>
                     <input class="invisible" type="text" name="codice" value="<% out.println(p.getCodice());%>" readonly>
-                    <input type="submit" class="btn btn-primary mNeg" value="Aggiungi al carrello" > 
+                    <input class="<%out.print(c);%>" style="width: 100px" type="number" name="qta" value="1" min="1" max=<%out.println(p.getQta());%>>
+                    <input type="submit" class="<%out.print(c);%> my-2 btn btn-primary mNeg" name="button1" value="Aggiungi al carrello" > 
                  </form>
               </div>
              </div>
@@ -104,12 +238,14 @@
                 <%
                     Double totale = 0.0;
                     for(Prodotto p : carrello){
-                        totale += p.getPrezzo();
+                        totale += p.getPrezzo()* p.getQta();
                 %>
                 <li class="list-group-item" > <% out.println(p.getNome()) ;%> <% out.println(p.getPrezzo()) ;%>€ 
                     
                  <form action="<%= request.getContextPath()%>/prodotti" method="post">
+                     <% request.setAttribute("carrello",carrello); %>
                     <input class="invisible" type="text" name="elimina" value="<% out.println(p.getCodice());%>" readonly>
+                    <label> Qta : <input type="number" name="qtaElimina" min=1 max=<% out.println(p.getQta());%> value=<% out.println(p.getQta());%>> </label>
                     <input class="invisible" type="text" name="codice" value="-1" readonly>
                     <input type="submit" class="btn btn-primary" value="ELIMINA" > 
                  </form>
