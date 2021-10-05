@@ -4,6 +4,7 @@
     Author     : Alessandro
 --%>
 
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="javafile.Prodotto"%>
 <%@page import="javafile.driverDB"%>
@@ -16,35 +17,123 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Shoppy AGM </title>
+        <title> Shoppy AGM </title>
     </head>
-    <body>
+    <body class="mx-5 my-2">
         <h1>Benvenuti nel mio shop</h1>
-        <!-- 
-        <% 
-       //   String username=request.getParameter("username"); 
-       //   String password=request.getParameter("password"); 
-          
-       //     if(!(username.equals("admin") && password.equals("admin"))){ 
-       //         response.sendRedirect("ErrorLogin.jsp");
-       //     } 
-       //     session.setAttribute("username",username); 
-        %>
-        -->
-        <div id="prodotti">
-            <% List<Prodotto> list = (List) request.getAttribute("list");%>
-            <% for(Prodotto p : list){ %>
-            <div class="card" style="width: 18rem;">
-                <img src="${p.img}" class="card-img-top">
+       
+   <style>
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid-container-prodotto{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .grid-item {
+          font-size: 30px;
+          text-align: center;
+          width: 18rem;
+          margin-bottom: 35px;
+          margin-right: 35px;
+        }
+        .list-group-item{
+            width:300px;
+            text-align: center;
+        }
+        .list-group{
+            width:300px;
+        }
+        .mfixed{
+            position: fixed ;
+        }
+        .mTop{
+            margin-top : 150px;
+        }
+        .invisible{
+            visibility: invisible;
+       }
+       .mNeg{
+           margin-top: -100px;
+       }
+       .toRight{
+           margin-left: 100rem; 
+            margin-right: 0;
+       }
+        
+    </style>
+    <%
+    String user = null;
+    if(session.getAttribute("usr")==null) response.sendRedirect("/progettoAcademy/jsp/loginForm.jsp");
+    %>
+    <a href="${pageContext.request.contextPath}/logout" class="btn btn-primary toRight"> LOGOUT </a>
+    <div class="grid-container">
+        <div>
+              <h1>Prodotti</h1>
+        <div id="prodotti" class="grid-container-prodotto">
+              
+            <% ArrayList<Prodotto> list = (ArrayList<Prodotto>)request.getAttribute("list"); 
+               ArrayList<Prodotto> carrello= (ArrayList<Prodotto>)request.getAttribute("carrello"); 
+            %>
+           <%
+               for(Prodotto p : list) { %>
+               <div class="grid-item">
+                    <div class="card" >
+                <img src=<% out.println(p.getImg()) ;%> class="card-img-top">
                 <div class="card-body">
-                  <h5 class="card-title">${p.nome}</h5>
-                  <p class="card-text">${p.prezzo}</p>
-                  <a href="#" class="btn btn-primary">Aggiungi al carrello</a>
-                </div>
+                  <h5 class="card-title"> <% out.println(p.getNome()) ;%> </h5>
+                  <p class="card-text"><% out.println(p.getPrezzo()) ;%> €</p>
+                <form action="<%= request.getContextPath()%>/prodotti" method="post">
+                    <input class="invisible" type="text" name="codice" value="<% out.println(p.getCodice());%>" readonly>
+                    <input type="submit" class="btn btn-primary mNeg" value="Aggiungi al carrello" > 
+                 </form>
+              </div>
              </div>
-            <% } %>
+               </div>
+            <%  
+            }
+            %>
         </div>
-            
+        </div>
+        <div class="mLeft ">
+        <div id="carrello" class="mfixed mTop">
+            <h1>Il mio carrello</h1>
+            <ul class="list-group">
+                
+                <%
+                    Double totale = 0.0;
+                    for(Prodotto p : carrello){
+                        totale += p.getPrezzo();
+                %>
+                <li class="list-group-item" > <% out.println(p.getNome()) ;%> <% out.println(p.getPrezzo()) ;%>€ 
+                    
+                 <form action="<%= request.getContextPath()%>/prodotti" method="post">
+                    <input class="invisible" type="text" name="elimina" value="<% out.println(p.getCodice());%>" readonly>
+                    <input class="invisible" type="text" name="codice" value="-1" readonly>
+                    <input type="submit" class="btn btn-primary" value="ELIMINA" > 
+                 </form>
+                 
+                </li> 
+                 <%  
+                }
+            %>
+            <div class="mx-auto my-3">
+              <form action="<%= request.getContextPath() %>/prodotti" method="post">
+                <input type="submit" name="button2" class="btn btn-primary" value="Compra!" > 
+              </form>
+            </div>
+            </ul>
+        </div>
+        <div id="totale" class="mfixed">
+                      <h1>Totale</h1>
+                <ul class="list-group">
+                    <li class="list-group-item" style="text-alig:center;"><%out.println(totale);%> € </li>
+                </ul>
+            </div>
+               
+        </div>
+    </div>
     </body>
 
 </html>
