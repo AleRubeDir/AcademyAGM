@@ -12,6 +12,8 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <okta.sdk.version>1.5.2</okta.sdk.version>
+        <okta.auth.version>1.0.0</okta.auth.version>
     </properties>
     
     <dependencies>
@@ -21,10 +23,33 @@
             <version>8.0.26</version>
         </dependency>
         <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.3.1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.okta.authn.sdk</groupId>
+            <artifactId>okta-authn-sdk-api</artifactId>
+            <version>${okta.auth.version}</version>
+         </dependency>
+        <dependency>
+            <groupId>com.okta.authn.sdk</groupId>
+            <artifactId>okta-authn-sdk-impl</artifactId>
+            <version>${okta.auth.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.okta.sdk</groupId>
+            <artifactId>okta-sdk-httpclient</artifactId>
+            <version>${okta.sdk.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

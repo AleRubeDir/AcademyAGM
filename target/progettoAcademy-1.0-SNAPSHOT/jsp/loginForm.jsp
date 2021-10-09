@@ -93,10 +93,12 @@ h1 {
         <form class="center" action="<%= request.getContextPath()%>/login" method="post"> 
             <h2>Inserisci i tuoi dati</h2> 
             <label> Username: <input type="text" name="usr"> </label> <br>
-            <label> Password: <input type="password" name="pwd"> </label>
+            <label> Password: <input type="password" name="pwd"> </label><br>
+            <label><a href="<%= request.getContextPath()%>/recovery"> Hai dimenticato la password?</a></label>
             <br/>
             <input type="submit" class="btn btn-primary" value="Accedi"> 
         </form> 
+        <a href="<%= request.getContextPath()%>/signup"> Sei nuovo? Registrati</a>
     </center> 
 </body> 
 </html>
