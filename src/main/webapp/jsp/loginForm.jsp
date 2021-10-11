@@ -65,7 +65,11 @@ body {
 h1 {
   font-family:monospace;
 }
-
+.cardbox{
+    background-color: white; 
+    border-radius: 10px; 
+    padding: 5px;
+}
 @keyframes slide {
   0% {
     transform:translateX(-25%);
@@ -94,11 +98,11 @@ h1 {
             <h2>Inserisci i tuoi dati</h2> 
             <label> Username: <input type="text" name="usr"> </label> <br>
             <label> Password: <input type="password" name="pwd"> </label><br>
-            <label><a href="<%= request.getContextPath()%>/recovery"> Hai dimenticato la password?</a></label>
+            <label><a href="<%= request.getContextPath()%>/recovery" class="cardbox"> Hai dimenticato la password?</a></label>
             <br/>
             <input type="submit" class="btn btn-primary" value="Accedi"> 
         </form> 
-        <a href="<%= request.getContextPath()%>/signup"> Sei nuovo? Registrati</a>
+        <a href="<%= request.getContextPath()%>/signup" class="cardbox"> Sei nuovo? Registrati</a>
     </center> 
 </body> 
 </html>

@@ -73,10 +73,10 @@ public class singupServlet extends HttpServlet {
       protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
        // response.sendRedirect("/progettoAcademy/prodotti");
-           String usr = request.getParameter("usr").toString();
+           String usr = request.getParameter("usr");
            if(check(usr)){
                String recovery = request.getParameter("recovery");
-               if(recovery==null || recovery == ""){
+               if(recovery==null || "".equals(recovery)){
                    request.setAttribute("err3", "visible");
                     doGet(request,response);
                }

@@ -86,7 +86,7 @@ h1 {
     <center>
         <h1 style="margin-top: 5rem;">Recupera la tua password</h1>
 
-         <form class="center" action="<%= request.getContextPath()%>/recovery" method="post"> 
+         <form action="<%= request.getContextPath()%>/recovery" method="post"> 
             <h2>Inserisci i tuoi dati</h2> 
             <label> Username: <input type="text" name="usr"> </label> <br>
             <label> Nome del tuo primo animale domestico? </label> <br>
@@ -111,7 +111,7 @@ h1 {
             <span style="color: green; background: transparent" class="<%out.println(referrC);%>"> <%out.println(pwd);%> </span></br>
             <input type="submit" class="btn btn-primary" value="Recupera">  </br>
         </form> 
-            </br> <a href="<%= request.getContextPath()%>/login" class="btn btn-primary"> Accedi</a>
+        </br> <a href="<%= request.getContextPath()%>/login" class="btn btn-primary"> Accedi</a>
         </center>
     </body>
 </html>
