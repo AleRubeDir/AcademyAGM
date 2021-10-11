@@ -1,5 +1,7 @@
 com\mycompany\progettoacademy\logout.class
+com\mycompany\progettoacademy\recoveryServlet.class
 com\mycompany\progettoacademy\prodottiServlet.class
 javafile\driverDB.class
+com\mycompany\progettoacademy\singupServlet.class
 com\mycompany\progettoacademy\loginServlet.class
 javafile\Prodotto.class

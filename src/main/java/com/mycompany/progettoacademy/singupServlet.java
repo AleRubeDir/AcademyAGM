@@ -42,6 +42,7 @@ public class singupServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+       
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -56,9 +57,15 @@ public class singupServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+         if(request.getAttribute("error")!=null) {
+            System.out.println("C'è un errore " + request.getAttribute("error"));            
+            RequestDispatcher rd = request.getRequestDispatcher("/jsp/errorPage.jsp");
+            rd.forward(request, response);
+        }else{
                 RequestDispatcher rd = request.getRequestDispatcher("/jsp/signup.jsp");
                     rd.forward(request, response);
        // processRequest(request, response);
+         }
     }
 
     /**
@@ -72,13 +79,13 @@ public class singupServlet extends HttpServlet {
     @Override
       protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       // response.sendRedirect("/progettoAcademy/prodotti");
            String usr = request.getParameter("usr");
+
            if(check(usr)){
                String recovery = request.getParameter("recovery");
                if(recovery==null || "".equals(recovery)){
-                   request.setAttribute("err3", "visible");
-                    doGet(request,response);
+                request.setAttribute("error","recovery_missing");
+                 doGet(request,response);
                }
                String pwd = request.getParameter("pwd").toString();
                   String query = "SELECT * "
@@ -88,16 +95,15 @@ public class singupServlet extends HttpServlet {
                 save(usr,pwd,recovery);
                 response.sendRedirect("/progettoAcademy/login");
            } catch (SQLException ex) {
-               System.out.println("GEC VALEEEEE : " + ex.getErrorCode());
-               if(ex.getErrorCode() == 1062 ){
-                    request.setAttribute("err2", "visible");
-               }
+               request.setAttribute("error","mail_already_used");
                 doGet(request,response);
-             Logger.getLogger(loginServlet.class.getName()).log(Level.SEVERE, null, ex);
+              // response.sendRedirect("/progettoAcademy/jsp/errorPage");
+               Logger.getLogger(loginServlet.class.getName()).log(Level.SEVERE, null, ex);
          }     
      }else{
-            request.setAttribute("err", "visible");
-            doGet(request,response);
+            request.setAttribute("error","mail_not_valid");
+           // response.sendRedirect("/progettoAcademy/jsp/errorPage");
+           doGet(request,response);
            }
     }
 

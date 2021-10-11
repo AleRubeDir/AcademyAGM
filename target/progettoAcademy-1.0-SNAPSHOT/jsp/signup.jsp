@@ -6,6 +6,7 @@
 
 <%@page import="java.util.regex.Matcher"%>
 <%@page import="java.util.regex.Pattern"%>
+      <%@page errorPage="errorPage.jsp" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -85,6 +86,7 @@ h1 {
         <title>Signup</title>
     </head>
     <body>
+  
           <div class="bg"></div>
         <div class="bg bg2"></div>
         <div class="bg bg3"></div>
